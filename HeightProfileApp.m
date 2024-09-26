@@ -28,7 +28,8 @@ classdef HeightProfileApp < matlab.apps.AppBase
         MeanAspectRatio      double % stores mean aspect ratio
         ResultsTable         matlab.ui.control.Table % Table for results display
     end
-
+%Depending on the size of AFM image, users has to change the values of xunit, xlim, ylim and (250/56) factors
+%Assumption: base width = 2x FWHM of gaussian
     methods (Access = private)
 
         % Load Data Button pressed function
@@ -70,14 +71,16 @@ classdef HeightProfileApp < matlab.apps.AppBase
             colorbar;
             hold("on")
             line([x1, x2], [y1, y2], [max(app.ZData(:)), max(app.ZData(:))], 'Color', 'red', 'LineWidth', 2);
-            xlabel('Distance (m)');
-            ylabel('Height (m)');
-            title('Height profile');
+            xlabel('x (pixel)');
+            ylabel('y (pixel)');
+            title('See the location of line profile');
             set(gca, 'FontName', 'Times', 'FontSize', 15);
             hold("off")
             grid off
             xlim([0,256])
             ylim([0,256])
+
+            uialert(app.UIFigure, 'Check the location of line profile!', 'Success');
          end
 
          % Plot Profile Button pressed function
@@ -340,7 +343,6 @@ classdef HeightProfileApp < matlab.apps.AppBase
         end
     end
 
-    
     % App initialization and construction
     methods (Access = public)
 

@@ -24,7 +24,7 @@
    ```bash
    git clone https://github.com/hisaylama/HeightProfileApp.git
    ```
-   Replace `hisaylama` with your actual GitHub username.
+ 
 
 2. **Open the App in MATLAB**:
    Navigate to the cloned directory in MATLAB, and open the `HeightProfileApp.m` file.

@@ -1,6 +1,6 @@
 # HeightProfileApp
 
-**HeightProfileApp** is a MATLAB application designed for visualizing and analyzing height profile data from atomic force microscopy (AFM) images. This app enables users to load height data, plot surface profiles, perform baseline corrections, fit Gaussian models to detected peaks, and save results.
+**HeightProfileApp** is a MATLAB application designed to visualize and analyze height profile data from atomic force microscopy (AFM) images. This app enables users to load height data, plot surface profiles, perform baseline corrections, fit Gaussian models to detect peaks, and save results.
 
 ## Features
 
@@ -37,7 +37,7 @@
 
 ## Usage
 
-1. **Load Data**: Click the "Load data" button to import a height data file in `.txt` format.
+1. **Load AFM Data**: Click the "Load data" button to import a height data file in `.txt` format.
 2. **Set Coordinates**: Input the X1, Y1, X2, and Y2 coordinates in the respective fields to define the line profile for extraction.
 3. **Plot Line Location**: Click "Line loc" to visualize the selected line location on the height surface.
 4. **Extract and Plot Profile**: Click the "Plot profile" button to extract and visualize the height profile along the specified line.

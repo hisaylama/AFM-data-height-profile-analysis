@@ -66,4 +66,3 @@ Contributions are welcome! Please fork the repository and create a pull request 
 
 ---
 
-Feel free to modify any section or add more details that you think might be relevant for users of your application.

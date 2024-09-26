@@ -59,10 +59,6 @@ Here’s a brief example to demonstrate how to use the app:
 
 Contributions are welcome! Please fork the repository and create a pull request for any changes or enhancements you would like to suggest.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
 ## Acknowledgments
 
 - This app was developed as part of research work involving atomic force microscopy and data analysis techniques.

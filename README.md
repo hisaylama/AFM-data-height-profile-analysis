@@ -4,10 +4,12 @@
 
 ---
 
-**Important note for using the code**
-- Ensure that the AFM surface profile data is in `.txt` format.
+**Important note**
+- Ensure that the AFM surface profile data file is in `.txt` format.
 - You can convert the AFM image (usually in `*.flt` format) to a *.txt file in [GWYDDION](http://gwyddion.net/). This can be simply done by opening the data in [GWYDDION](http://gwyddion.net/), then clicking the `save as` button to save in `*.txt` format. 
-While saving, ensure you have unclicked all the labels in the **EXPORT FUNCTION** tab (the tab pops while saving the file in `*.txt` format). Gwyddion 
+While saving, ensure you have unclicked all the labels in the **EXPORT FUNCTION** tab (the tab pops while saving the file in `*.txt` format).
+
+---
 
 ## Features
 - **Load Height Data**: Import AFM raw data in `.txt` format. (here it is `CNC-A250-2.5min-2.SIG_TOPO_FRW.txt` )

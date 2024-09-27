@@ -68,9 +68,7 @@ Contributions are welcome! Please fork the repository and create a pull request 
 
 ## Output 
 Here is a snapshot of the user interface of the HeightVisualization app.
-![HeightVisualisatioApp_FinalOutput](https://github.com/user-attachments/assets/0c106f83-7d11-4dc1-b98d-9e87151661eb)
-
-
+![HeightVisualisatioApp_FinalOutput](https://github.com/user-attachments/assets/a588fdb4-2f92-4239-87ef-a7377fecc0e7)
 
 ## Acknowledgements
 

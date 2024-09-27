@@ -5,7 +5,7 @@
 **Important note**
 ---
 - Ensure that the AFM surface profile data is in `.txt` format.
-- You can convert the AFM image (usually in `*.flt` format) to *.txt file in [GWYDDION](http://gwyddion.net/). This can simply done by using save as the image into a `*.txt` type. 
+- You can convert the AFM image (usually in `*.flt` format) to a *.txt file in [GWYDDION](http://gwyddion.net/). This can simply done by using save as the image into a `*.txt` type. 
 While saving, ensure you have unclicked all the labels in the **EXPORT FUNCTION** tab (the tab pops while saving the file in `*.txt` format). Gwyddion 
 
 ## Features

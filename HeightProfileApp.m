@@ -6,6 +6,7 @@ classdef HeightProfileApp < matlab.apps.AppBase
         LoadButton           matlab.ui.control.Button
         PlotButton           matlab.ui.control.Button
         PlotButtonLine       matlab.ui.control.Button
+        PlotHeightDistribution matlab.ui.control.Button
         BaselineButton       matlab.ui.control.Button
         GaussianFitButton    matlab.ui.control.Button
         SaveButton           matlab.ui.control.Button
@@ -50,12 +51,43 @@ classdef HeightProfileApp < matlab.apps.AppBase
                 view(app.UIAxes, [0, 90]);
                 colormap(app.UIAxes, 'jet');
                 colorbar(app.UIAxes);
+                % Create a label for mean aspect ratio
+                ZDataLabel = uilabel(app.UIFigure, ...
+                'Text', 'Z (m)', ...  % Direct text instead of textbox function
+                'Position', [550, 220, 250, 30]);
+
             end
+        end
+
+        function HistogramButtonPushed(app, ~)
+
+            [length_x, length_y] = size(app.HeightData);
+            [app.XData, YData] = meshgrid(1:length_x, 1:length_y);
+
+            % Adjust height data for better visibility
+            app.ZData = app.HeightData + max(app.HeightData(:));
+
+            % Find hills and valleys
+            hills = imregionalmax(app.ZData);
+            
+            % Get indices of hills and valleys
+            hill_indices = find(hills);
+            
+            figure;
+            bins = 30;
+            histogram(app.ZData(hill_indices) * 1e6, bins, 'Normalization', 'pdf');  % Use 'probability' for percentage-based histogram
+            xlabel('Height (\mum)');
+            ylabel('Percentage');
+            ytickformat('percentage');
+            set(gca, 'FontName', 'Times', 'FontSize', 15);
+
+            % saveas(fig1, 'Histogram_Height.png')
+            %units
+        
         end
 
         % Plot Profile Button pressed function
          function PlotButtonLinePushed(app, ~)
-
             [length_x, length_y] = size(app.HeightData);
             [app.XData, YData] = meshgrid(1:length_x, 1:length_y);
             % Retrieve the values from the editable fields
@@ -80,7 +112,6 @@ classdef HeightProfileApp < matlab.apps.AppBase
             grid off
             xlim([0,256])
             ylim([0,256])
-
             uialert(app.UIFigure, 'Check the location of line profile!', 'Success');
          end
 
@@ -98,9 +129,9 @@ classdef HeightProfileApp < matlab.apps.AppBase
 
             % Plot the profile
             figure;
-            plot(((x1:x2)-x1).*xunit, app.ProfileData, 'r-', 'LineWidth', 1.2);         
-            xlabel('Distance (m)');
-            ylabel('Height (m)');
+            plot(((x1:x2)-x1).*xunit*1e6, app.ProfileData*1e6, 'r-', 'LineWidth', 1.2);         
+            xlabel('Distance (\mum)');
+            ylabel('Height (\mum)');
             title('Height profile');
             set(gca, 'FontName', 'Times', 'FontSize', 15);
         end
@@ -137,11 +168,11 @@ classdef HeightProfileApp < matlab.apps.AppBase
             xunit = (50/256).*1e-6; % conversion of x, y in meters
             % Plot original and shifted profile
             figure;
-            plot(x.*xunit, y, 'b-', 'LineWidth', 1.2);
+            plot(x.*xunit*1e6, y*1e6, 'b-', 'LineWidth', 1.2);
             hold on;
-            plot(x.*xunit, y_new, 'g-', 'LineWidth', 1.2);
-            xlabel('Distance (m)');
-            ylabel('Height (m)');
+            plot(x.*xunit*1e6, y_new*1e6, 'g-', 'LineWidth', 1.2);
+            xlabel('Distance (\mum)');
+            ylabel('Height (\mum)');
             legend('Original profile', 'Shifted profile');
             title('Baseline corrected profile');
             set(gca, 'FontName', 'Times', 'FontSize', 15);
@@ -151,8 +182,8 @@ classdef HeightProfileApp < matlab.apps.AppBase
         % Gaussian Fit Button pressed function
         function GaussianFitButtonPushed(app, ~)
             % Use shifted profile data for Gaussian fitting
-            x = (app.X1EditField.Value:app.X2EditField.Value)-app.X1EditField.Value;
-            y = app.ShiftedProfileData;
+            x = (app.X1EditField.Value:app.X2EditField.Value)-app.X1EditField.Value; %(in pixel)
+            y = app.ShiftedProfileData; %(m)
 
             [peaks, locs] = findpeaks(y, x);
             numPeaks = numel(locs);
@@ -164,41 +195,43 @@ classdef HeightProfileApp < matlab.apps.AppBase
             app.Peak2peak = zeros(numPeaks-1, 1);
 
             xunit = (50/256).*1e-6; % conversion of x, y in meters
+            xData = x;
+            
             % Plot original data
             figure;
-            plot(x.*xunit, y.*xunit, 'b.', 'MarkerSize', 10);
+            plot(xData*xunit*1e6, y*1e6, 'bo', 'MarkerSize', 4); 
             hold on;
-
+            
             % Fit Gaussian model to each peak
             for i = 1:numPeaks-1
                 gaussModel = fittype(@(A, mu, sigma, x) A * exp(-(x - mu).^2 / (2 * sigma^2)), ...
                     'independent', 'x', 'dependent', 'y');
                 windowSize = 20;
-                startIndex = find(x >= locs(i) - windowSize, 1, 'first');
-                endIndex = find(x <= locs(i) + windowSize, 1, 'last');
-                xWindow = x(startIndex:endIndex);
+                startIndex = find(xData >= locs(i) - windowSize, 1, 'first');
+                endIndex = find(xData <= locs(i) + windowSize, 1, 'last');
+                xWindow = xData(startIndex:endIndex);
                 yWindow = y(startIndex:endIndex);
 
                 fittedModel = fit(xWindow', yWindow', gaussModel, 'StartPoint', [peaks(i), locs(i), 1]);
-                amplitudes(i) = fittedModel.A * (50/256);
-                Mu(i) = fittedModel.mu * (50/256);
-                Sigma(i) = fittedModel.sigma * (50/256);
+                amplitudes(i) = fittedModel.A*1e6;
+                Mu(i) = fittedModel.mu;
+                Sigma(i) = fittedModel.sigma;
                 
                 %Caclulate the height of the peaks
-                app.Peak2peak(i) = fittedModel.A.*(1e6);
+                app.Peak2peak(i) = fittedModel.A*1e6;
 
                 % Calculate FWHM = additional (2)
-                app.FWHMData(i) = 2 * sqrt(2 * log(2)) * fittedModel.sigma *(50/256); % FWHM formula
+                app.FWHMData(i) = 2 * sqrt(2 * log(2)) * fittedModel.sigma.*(50/256); % FWHM formula
                 % Calculate Aspect Ratio
-                app.AspectRatioData(i) = fittedModel.A.*(1e6) ./(2*app.FWHMData(i)) ;
+                app.AspectRatioData(i) = (fittedModel.A*1e6)./(2*app.FWHMData(i)) ;
 
                 xFit = linspace(locs(i) - windowSize, locs(i) + windowSize, 100);
                 yFit = feval(fittedModel, xFit);
-                plot(xFit.*xunit, yFit.*xunit, 'r-', 'LineWidth', 1.2);
+                plot(xFit.*(50/256), yFit.*1e6, 'r-', 'LineWidth', 1.2);
             end
             hold off;
-            xlabel('Distance (m)');
-            ylabel('Height (m)');
+            xlabel('Distance (\mum)');
+            ylabel('Height (\mum)');
             title('Gaussian fit of peaks');
             set(gca, 'FontName', 'Times', 'FontSize', 15);
 
@@ -218,9 +251,9 @@ classdef HeightProfileApp < matlab.apps.AppBase
             app.ResultsTable.RowName = [];
 
             % Create a label for mean aspect ratio
-            meanARLabel = uilabel(app.UIFigure, ...
-                'Text', sprintf('Average - A.R = %.2f', app.MeanAspectRatio), ...
-                'Position', [20, 50, 250, 30]);
+            %meanARLabel = uilabel(app.UIFigure, ...
+            %    'Text', sprintf('Average - A.R = %.2f', app.MeanAspectRatio), ...
+            %    'Position', [20, 50, 250, 30]);
         end
 
         % Save Table Button pressed function
@@ -260,56 +293,62 @@ classdef HeightProfileApp < matlab.apps.AppBase
             app.LoadButton.Text = 'Load data (*.txt)';
             app.LoadButton.ButtonPushedFcn = createCallbackFcn(app, @LoadButtonPushed, true);
 
+            % Create Load Button
+            app.PlotHeightDistribution = uibutton(app.UIFigure, 'push');
+            app.PlotHeightDistribution.Position = [20 500 120 30];
+            app.PlotHeightDistribution.Text = 'Height distib.';
+            app.PlotHeightDistribution.ButtonPushedFcn = createCallbackFcn(app, @HistogramButtonPushed, true);
+
             % Create X1 Label and EditField
             app.X1EditFieldLabel = uilabel(app.UIFigure);
             app.X1EditFieldLabel.HorizontalAlignment = 'right';
-            app.X1EditFieldLabel.Position = [20 480 50 22];
+            app.X1EditFieldLabel.Position = [20 460 50 22];
             app.X1EditFieldLabel.Text = 'X1 (pixel)';
 
             app.X1EditField = uieditfield(app.UIFigure, 'numeric');
-            app.X1EditField.Position = [80 480 60 30];
+            app.X1EditField.Position = [80 460 60 30];
             app.X1EditField.Value = 50;
 
             % Create Y1 Label and EditField
             app.Y1EditFieldLabel = uilabel(app.UIFigure);
             app.Y1EditFieldLabel.HorizontalAlignment = 'right';
-            app.Y1EditFieldLabel.Position = [20 440 50 22];
+            app.Y1EditFieldLabel.Position = [20 420 50 22];
             app.Y1EditFieldLabel.Text = 'Y1 (pixel)';
 
             app.Y1EditField = uieditfield(app.UIFigure, 'numeric');
-            app.Y1EditField.Position = [80 440 60 30];
+            app.Y1EditField.Position = [80 420 60 30];
             app.Y1EditField.Value = 50;
 
             % Create X2 Label and EditField
             app.X2EditFieldLabel = uilabel(app.UIFigure);
             app.X2EditFieldLabel.HorizontalAlignment = 'right';
-            app.X2EditFieldLabel.Position = [20 400 50 22];
+            app.X2EditFieldLabel.Position = [20 380 50 22];
             app.X2EditFieldLabel.Text = 'X2 (pixel)';
 
             app.X2EditField = uieditfield(app.UIFigure, 'numeric');
-            app.X2EditField.Position = [80 400 60 30];
+            app.X2EditField.Position = [80 380 60 30];
             app.X2EditField.Value = 230;
 
             % Create Y2 Label and EditField
             app.Y2EditFieldLabel = uilabel(app.UIFigure);
             app.Y2EditFieldLabel.HorizontalAlignment = 'right';
-            app.Y2EditFieldLabel.Position = [20 360 50 22];
+            app.Y2EditFieldLabel.Position = [20 340 50 22];
             app.Y2EditFieldLabel.Text = 'Y2 (pixel)';
 
             app.Y2EditField = uieditfield(app.UIFigure, 'numeric');
-            app.Y2EditField.Position = [80 360 60 30];
+            app.Y2EditField.Position = [80 340 60 30];
             app.Y2EditField.Value = 50;
 
             %Visualize line overlayed surface plot
             app.PlotButtonLine = uibutton(app.UIFigure, 'push');
             app.PlotButtonLine.Position = [20 220 120 30];
-            app.PlotButtonLine.Text = 'Check line loc.';
+            app.PlotButtonLine.Text = 'Check Line loc.';
             app.PlotButtonLine.ButtonPushedFcn = createCallbackFcn(app, @PlotButtonLinePushed, true);
 
             % Create Plot Button
             app.PlotButton = uibutton(app.UIFigure, 'push');
             app.PlotButton.Position = [20 180 120 30];
-            app.PlotButton.Text = 'Draw line profile';
+            app.PlotButton.Text = 'Line profile';
             app.PlotButton.ButtonPushedFcn = createCallbackFcn(app, @PlotButtonPushed, true);
 
             % Create Baseline Button

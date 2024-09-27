@@ -36,8 +36,8 @@
    ```
 **Tips for preparing AFM data in `.txt` format**
 ---
- - First convert the AFM image in *.flt format to *.txt file in GWYDDION. This can simply done by using save as the image into a *.txt type. 
-While saving, ensure you have unclicked all the labels in the EXPORT FUNCTION tab (the tab pops while saving the file in *.txt format).
+ - First convert the AFM image in `*.flt` format to *.txt file in **GWYDDION**. This can simply done by using save as the image into a `*.txt` type. 
+While saving, ensure you have unclicked all the labels in the **EXPORT FUNCTION** tab (the tab pops while saving the file in `*.txt` format).
 
 ## Usage
 

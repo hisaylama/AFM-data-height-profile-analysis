@@ -2,10 +2,11 @@
 
 **HeightProfileApp** is a MATLAB application designed to visualize and analyze height profile data from atomic force microscopy (AFM) images. This app enables users to load height data, plot surface profiles, perform baseline corrections, fit Gaussian models to detect peaks, and save results. 
 
-**Important note**
 ---
+
+**Important note for using the code**
 - Ensure that the AFM surface profile data is in `.txt` format.
-- You can convert the AFM image (usually in `*.flt` format) to a *.txt file in [GWYDDION](http://gwyddion.net/). This can simply done by using save as the image into a `*.txt` type. 
+- You can convert the AFM image (usually in `*.flt` format) to a *.txt file in [GWYDDION](http://gwyddion.net/). This can be simply done by opening the data in [GWYDDION](http://gwyddion.net/), then clicking the `save as` button to save in `*.txt` format. 
 While saving, ensure you have unclicked all the labels in the **EXPORT FUNCTION** tab (the tab pops while saving the file in `*.txt` format). Gwyddion 
 
 ## Features

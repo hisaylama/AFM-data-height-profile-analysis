@@ -1,6 +1,12 @@
 # HeightProfileApp
 
-**HeightProfileApp** is a MATLAB application designed to visualize and analyze height profile data from atomic force microscopy (AFM) images. This app enables users to load height data, plot surface profiles, perform baseline corrections, fit Gaussian models to detect peaks, and save results.
+**HeightProfileApp** is a MATLAB application designed to visualize and analyze height profile data from atomic force microscopy (AFM) images. This app enables users to load height data, plot surface profiles, perform baseline corrections, fit Gaussian models to detect peaks, and save results. 
+
+**Important note**
+---
+- Ensure that the AFM surface profile data is in `.txt` format.
+- You can convert the AFM image (usually in `*.flt` format) to *.txt file in [GWYDDION](http://gwyddion.net/). This can simply done by using save as the image into a `*.txt` type. 
+While saving, ensure you have unclicked all the labels in the **EXPORT FUNCTION** tab (the tab pops while saving the file in `*.txt` format). Gwyddion 
 
 ## Features
 - **Load Height Data**: Import AFM raw data in `.txt` format. (here it is `CNC-A250-2.5min-2.SIG_TOPO_FRW.txt` )
@@ -34,10 +40,6 @@
    ```matlab
    app = HeightProfileApp;
    ```
-**Tips for preparing AFM data in `.txt` format**
----
- - First convert the AFM image in `*.flt` format to *.txt file in **GWYDDION**. This can simply done by using save as the image into a `*.txt` type. 
-While saving, ensure you have unclicked all the labels in the **EXPORT FUNCTION** tab (the tab pops while saving the file in `*.txt` format).
 
 ## Usage
 
@@ -54,11 +56,10 @@ While saving, ensure you have unclicked all the labels in the **EXPORT FUNCTION*
 ## Example
 
 Here’s a brief example to demonstrate how to use the app:
-
 1. Load your height data using the "Load data" button.
 2. Define the line profile coordinates in the X1, Y1, X2, and Y2 fields.
 3. Use the buttons to visualize, correct, and analyze the height data.
-4. Save the analysis results for further reference.
+4. Save the analysis results in `.csv` format for further analysis.
 
 ## Contributing
 
@@ -66,8 +67,8 @@ Contributions are welcome! Please fork the repository and create a pull request 
 
 ## Output 
 Here is a snapshot of the user interface of the HeightVisualization app.
+![HeightVisualisatioApp_FinalOutput](https://github.com/user-attachments/assets/0c106f83-7d11-4dc1-b98d-9e87151661eb)
 
-![HeightVisualisatioApp_FinalOutput](https://github.com/user-attachments/assets/2dde7ad7-5bc6-4b6e-93eb-5ba228dd2b8a)
 
 
 ## Acknowledgements

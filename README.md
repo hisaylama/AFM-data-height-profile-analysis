@@ -62,9 +62,10 @@ Here’s a brief example to demonstrate how to use the app:
 Contributions are welcome! Please fork the repository and create a pull request for any changes or enhancements you would like to suggest.
 
 ## Output 
-Here is the snapshot of the user interface of the app.
+Here is a snapshot of the user interface of the HeightVisualization app.
 
-![HeightVisualisatioApp_FinalOutput](https://github.com/user-attachments/assets/a2cbc388-b2a8-4f5b-beb6-1be645550671)
+![HeightVisualisatioApp_FinalOutput](https://github.com/user-attachments/assets/2dde7ad7-5bc6-4b6e-93eb-5ba228dd2b8a)
+
 
 ## Acknowledgements
 

@@ -4,7 +4,7 @@
 
 ## Features
 
-- **Load Height Data**: Import height data from text files.
+- **Load Height Data**: Import AFM raw data in `.txt` format. (here it is `CNC-A250-2.5min-2.SIG_TOPO_FRW.txt` )
 - **Visualize Surface**: Display 3D surface plots of the height data.
 - **Profile Extraction**: Extract and visualize height profiles based on user-defined coordinates.
 - **Baseline Correction**: Correct the baseline of the extracted profiles.
@@ -17,6 +17,7 @@
 - MATLAB (R2019a or later recommended)
 - MATLAB App Designer (included with MATLAB)
 - Basic knowledge of MATLAB and data visualization techniques
+
 
 ## Installation
 
@@ -45,6 +46,7 @@
 6. **Gaussian Fit**: Click "Gaussian fit" to fit Gaussian models to the corrected profile peaks and display the results.
 7. **View Results**: The results table displays the FWHM and aspect ratios for the fitted peaks.
 8. **Save Results**: Click "Save Results" to export the results table to a CSV file.
+9. **Note**: Gaussian fitting and the results tables are applicable only for the sinusoid-type height profile. Otherwise, stop after you obtain the height profile.
 
 ## Example
 
@@ -59,7 +61,11 @@ Here’s a brief example to demonstrate how to use the app:
 
 Contributions are welcome! Please fork the repository and create a pull request for any changes or enhancements you would like to suggest.
 
-## Acknowledgments
+## Output 
+Here is the snapshot of the user-interface of the app.
+![HeightVisualisatioApp_FinalOutput](https://github.com/user-attachments/assets/a2cbc388-b2a8-4f5b-beb6-1be645550671)
+
+## Acknowledgements
 
 - This app was developed as part of research work involving atomic force microscopy and data analysis techniques.
 - Thanks to the MATLAB community for providing extensive resources and support.

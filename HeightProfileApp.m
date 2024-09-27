@@ -24,6 +24,7 @@ classdef HeightProfileApp < matlab.apps.AppBase
         ProfileData          double % stores the line profile data
         ShiftedProfileData   double % stores the corrected profile
         FWHMData             double % stores FWHM values
+        Peak2peak            double %store the height
         AspectRatioData      double % stores aspect ratio values
         MeanAspectRatio      double % stores mean aspect ratio
         ResultsTable         matlab.ui.control.Table % Table for results display
@@ -107,7 +108,7 @@ classdef HeightProfileApp < matlab.apps.AppBase
 
         % Baseline Correction Button pressed function
         function BaselineButtonPushed(app, ~)
-            x = (50:230) - 50;
+            x = (app.X1EditField.Value:app.X2EditField.Value)-app.X1EditField.Value;
             y = app.ProfileData';
 
             % Detect local minima
@@ -150,16 +151,17 @@ classdef HeightProfileApp < matlab.apps.AppBase
         % Gaussian Fit Button pressed function
         function GaussianFitButtonPushed(app, ~)
             % Use shifted profile data for Gaussian fitting
-            x = (50:230) - 50;
+            x = (app.X1EditField.Value:app.X2EditField.Value)-app.X1EditField.Value;
             y = app.ShiftedProfileData;
 
             [peaks, locs] = findpeaks(y, x);
             numPeaks = numel(locs);
-            amplitudes = zeros(numPeaks, 1);
-            Mu = zeros(numPeaks, 1);
-            Sigma = zeros(numPeaks, 1);
-            app.FWHMData = zeros(numPeaks, 1);
-            app.AspectRatioData = zeros(numPeaks, 1);
+            amplitudes = zeros(numPeaks-1, 1);
+            Mu = zeros(numPeaks-1, 1);
+            Sigma = zeros(numPeaks-1, 1);
+            app.FWHMData = zeros(numPeaks-1, 1);
+            app.AspectRatioData = zeros(numPeaks-1, 1);
+            app.Peak2peak = zeros(numPeaks-1, 1);
 
             xunit = (50/256).*1e-6; % conversion of x, y in meters
             % Plot original data
@@ -181,11 +183,14 @@ classdef HeightProfileApp < matlab.apps.AppBase
                 amplitudes(i) = fittedModel.A * (50/256);
                 Mu(i) = fittedModel.mu * (50/256);
                 Sigma(i) = fittedModel.sigma * (50/256);
+                
+                %Caclulate the height of the peaks
+                app.Peak2peak(i) = fittedModel.A.*(1e6);
 
-                % Calculate FWHM
+                % Calculate FWHM = additional (2)
                 app.FWHMData(i) = 2 * sqrt(2 * log(2)) * fittedModel.sigma *(50/256); % FWHM formula
                 % Calculate Aspect Ratio
-                app.AspectRatioData(i) = fittedModel.A.*(1e6) ./app.FWHMData(i) ;
+                app.AspectRatioData(i) = fittedModel.A.*(1e6) ./(2*app.FWHMData(i)) ;
 
                 xFit = linspace(locs(i) - windowSize, locs(i) + windowSize, 100);
                 yFit = feval(fittedModel, xFit);
@@ -206,16 +211,16 @@ classdef HeightProfileApp < matlab.apps.AppBase
         % Function to create results table
         function createResultsTable(app)
             % Create a table for displaying results
-            data = [app.FWHMData, app.AspectRatioData];
-            columnNames = {'2xFWHM (u m)', 'Aspect Ratio'};
+            data = [2*app.FWHMData, app.Peak2peak ,app.AspectRatioData];
+            columnNames = {'Base width (um)', 'Peak height (um)' ,'Aspect Ratio (A.R)'};
             app.ResultsTable.Data = data;
             app.ResultsTable.ColumnName = columnNames;
             app.ResultsTable.RowName = [];
 
             % Create a label for mean aspect ratio
             meanARLabel = uilabel(app.UIFigure, ...
-                'Text', sprintf('Mean A.R: %.2f', app.MeanAspectRatio), ...
-                'Position', [20, 50, 200, 30]);
+                'Text', sprintf('Average - A.R = %.2f', app.MeanAspectRatio), ...
+                'Position', [20, 50, 250, 30]);
         end
 
         % Save Table Button pressed function
@@ -246,65 +251,65 @@ classdef HeightProfileApp < matlab.apps.AppBase
 
             % Create UIFigure and hide until all components are created
             app.UIFigure = uifigure('Visible', 'off');
-            app.UIFigure.Position = [10 10 640 480];
+            app.UIFigure.Position = [10 10 640 600];
             app.UIFigure.Name = 'Height visualisation app';
 
             % Create Load Button
             app.LoadButton = uibutton(app.UIFigure, 'push');
-            app.LoadButton.Position = [20 420 120 30];
-            app.LoadButton.Text = 'Load data';
+            app.LoadButton.Position = [20 550 120 30];
+            app.LoadButton.Text = 'Load data (*.txt)';
             app.LoadButton.ButtonPushedFcn = createCallbackFcn(app, @LoadButtonPushed, true);
 
             % Create X1 Label and EditField
             app.X1EditFieldLabel = uilabel(app.UIFigure);
             app.X1EditFieldLabel.HorizontalAlignment = 'right';
-            app.X1EditFieldLabel.Position = [20 380 50 22];
-            app.X1EditFieldLabel.Text = 'X1';
+            app.X1EditFieldLabel.Position = [20 480 50 22];
+            app.X1EditFieldLabel.Text = 'X1 (pixel)';
 
             app.X1EditField = uieditfield(app.UIFigure, 'numeric');
-            app.X1EditField.Position = [80 380 60 30];
+            app.X1EditField.Position = [80 480 60 30];
             app.X1EditField.Value = 50;
 
             % Create Y1 Label and EditField
             app.Y1EditFieldLabel = uilabel(app.UIFigure);
             app.Y1EditFieldLabel.HorizontalAlignment = 'right';
-            app.Y1EditFieldLabel.Position = [20 340 50 22];
-            app.Y1EditFieldLabel.Text = 'Y1';
+            app.Y1EditFieldLabel.Position = [20 440 50 22];
+            app.Y1EditFieldLabel.Text = 'Y1 (pixel)';
 
             app.Y1EditField = uieditfield(app.UIFigure, 'numeric');
-            app.Y1EditField.Position = [80 340 60 30];
+            app.Y1EditField.Position = [80 440 60 30];
             app.Y1EditField.Value = 50;
 
             % Create X2 Label and EditField
             app.X2EditFieldLabel = uilabel(app.UIFigure);
             app.X2EditFieldLabel.HorizontalAlignment = 'right';
-            app.X2EditFieldLabel.Position = [20 300 50 22];
-            app.X2EditFieldLabel.Text = 'X2';
+            app.X2EditFieldLabel.Position = [20 400 50 22];
+            app.X2EditFieldLabel.Text = 'X2 (pixel)';
 
             app.X2EditField = uieditfield(app.UIFigure, 'numeric');
-            app.X2EditField.Position = [80 300 60 30];
+            app.X2EditField.Position = [80 400 60 30];
             app.X2EditField.Value = 230;
 
             % Create Y2 Label and EditField
             app.Y2EditFieldLabel = uilabel(app.UIFigure);
             app.Y2EditFieldLabel.HorizontalAlignment = 'right';
-            app.Y2EditFieldLabel.Position = [20 260 50 22];
-            app.Y2EditFieldLabel.Text = 'Y2';
+            app.Y2EditFieldLabel.Position = [20 360 50 22];
+            app.Y2EditFieldLabel.Text = 'Y2 (pixel)';
 
             app.Y2EditField = uieditfield(app.UIFigure, 'numeric');
-            app.Y2EditField.Position = [80 260 60 30];
+            app.Y2EditField.Position = [80 360 60 30];
             app.Y2EditField.Value = 50;
 
             %Visualize line overlayed surface plot
             app.PlotButtonLine = uibutton(app.UIFigure, 'push');
             app.PlotButtonLine.Position = [20 220 120 30];
-            app.PlotButtonLine.Text = 'Line loc';
+            app.PlotButtonLine.Text = 'Check line loc.';
             app.PlotButtonLine.ButtonPushedFcn = createCallbackFcn(app, @PlotButtonLinePushed, true);
 
             % Create Plot Button
             app.PlotButton = uibutton(app.UIFigure, 'push');
             app.PlotButton.Position = [20 180 120 30];
-            app.PlotButton.Text = 'Plot profile';
+            app.PlotButton.Text = 'Draw line profile';
             app.PlotButton.ButtonPushedFcn = createCallbackFcn(app, @PlotButtonPushed, true);
 
             % Create Baseline Button
@@ -316,21 +321,23 @@ classdef HeightProfileApp < matlab.apps.AppBase
             % Create Gaussian Fit Button
             app.GaussianFitButton = uibutton(app.UIFigure, 'push');
             app.GaussianFitButton.Position = [20 100 120 30];
-            app.GaussianFitButton.Text = 'Gaussian fit';
+            app.GaussianFitButton.Text = 'Fit peak (Gaussian)';
             app.GaussianFitButton.ButtonPushedFcn = createCallbackFcn(app, @GaussianFitButtonPushed, true);
 
             % Create UIAxes
             app.UIAxes = uiaxes(app.UIFigure);
-            app.UIAxes.Position = [150 220 450 250];
-            app.UIAxes.XLabel.String = 'X';
-            app.UIAxes.YLabel.String = 'Y';
-            app.UIAxes.ZLabel.String = 'Z';
+            app.UIAxes.Position = [150 220 450 350];
+            app.UIAxes.XLabel.String = 'X (pixel)';
+            app.UIAxes.YLabel.String = 'Y (pixel)';
+            app.UIAxes.ZLabel.String = 'Z (m)';
+            app.UIAxes.XLim = [0, 256];
+            app.UIAxes.YLim = [0, 256];
 
             % Create Results Table
             app.ResultsTable = uitable(app.UIFigure);
             app.ResultsTable.Position = [180 10 400 150];
             app.ResultsTable.Data = [];
-            app.ResultsTable.ColumnName = {'2xFWHM (um)', 'Aspect Ratio'};
+            app.ResultsTable.ColumnName = {'Base width (um)', 'Peak height (um)', 'Aspect Ratio (A.R)'};
 
             % Create Save Button
             app.SaveButton = uibutton(app.UIFigure, 'push');

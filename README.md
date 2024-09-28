@@ -12,7 +12,7 @@ While saving, ensure you have unclicked all the labels in the **EXPORT FUNCTION*
 ---
 
 ## Features
-- **Load Height Data**: Import AFM raw data in `.txt` format. (here it is `CNC-A250-2.5min-2.SIG_TOPO_FRW.txt` )
+- **Load Height Data**: Import AFM raw data in `.txt` format. (here it is `CNC-A250-2.5min-2.SIG_TOPO_FRW.txt`)
 - **Visualize Surface**: Display 3D surface plots of the height data.
 - **Profile Extraction**: Extract and visualize height profiles based on user-defined coordinates.
 - **Baseline Correction**: Correct the baseline of the extracted profiles.

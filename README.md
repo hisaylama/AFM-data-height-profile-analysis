@@ -18,7 +18,7 @@ While saving, ensure you have unclicked all the labels in the **EXPORT FUNCTION*
 - **Baseline Correction**: Correct the baseline of the extracted profiles.
 - **Gaussian Fitting**: Fit Gaussian models to peaks in the corrected profile.
 - **Results Table**: Displays base width = 2xFWHM (Full Width at Half Maximum) and aspect ratio data in a table format.
-- **Save Results**: Export results to CSV files for further analysis.
+- **Save Results**: Export results to `.*CSV` files for further analysis.
 
 ## Requirements
 

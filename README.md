@@ -17,7 +17,7 @@ While saving, ensure you have unclicked all the labels in the **EXPORT FUNCTION*
 - **Profile Extraction**: Extract and visualize height profiles based on user-defined coordinates.
 - **Baseline Correction**: Correct the baseline of the extracted profiles.
 - **Gaussian Fitting**: Fit Gaussian models to peaks in the corrected profile.
-- **Results Table**: Display base width = 2xFWHM (Full Width at Half Maximum) and aspect ratio data in a table format.
+- **Results Table**: Displays base width = 2xFWHM (Full Width at Half Maximum) and aspect ratio data in a table format.
 - **Save Results**: Export results to CSV files for further analysis.
 
 ## Requirements
